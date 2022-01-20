@@ -10,7 +10,6 @@ import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 
 
 public class Paint {
@@ -20,7 +19,7 @@ public class Paint {
     private JMenuBar menuBar = new JMenuBar();
     //buttons
     JRadioButton line = new JRadioButton("Line");
-    JRadioButton oval = new JRadioButton("Brush");
+    JRadioButton brush = new JRadioButton("Brush");
     JRadioButton eraser = new JRadioButton("Eraser");
 
     JButton uploadImage = new JButton();
@@ -33,22 +32,39 @@ public class Paint {
     JLabel saveLabel = new JLabel("Save this paint");
     JLabel shapelabel = new JLabel("Shapes:");
 
+    //shapes:
+    JRadioButton triangle = new JRadioButton("Triangle");
+    JRadioButton ovalShape = new JRadioButton("Oval");
+    JRadioButton square = new JRadioButton("Square");
+    JRadioButton rectangle = new JRadioButton("Rectangle");
+    JRadioButton none = new JRadioButton("None");
+
+
+    ButtonGroup group1 = new ButtonGroup();
+    JRadioButton shapes[] = {none, ovalShape, triangle, square, rectangle};
+
     //saving & uploading
     JFileChooser chooser = new JFileChooser();
     BufferedImage bi;
 
-    //timer care sa dea refresh la stilul de desen
+    //timer care sa dea refresh la stilul de desen si shape ul selectat
     Timer timer = new Timer(100, new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
-            if (oval.isSelected()) drawArea.style = Style.OVAL;
+            //style
+            if (brush.isSelected()) drawArea.style = Style.BRUSH;
             else if (line.isSelected()) drawArea.style = Style.LINE;
             else if (eraser.isSelected()) drawArea.style = Style.ERASER;
+            //shape
+            if(none.isSelected())drawArea.currentShape=Shape.NONE;
+            else if(ovalShape.isSelected())drawArea.currentShape=Shape.OVAL;
+            else if(triangle.isSelected())drawArea.currentShape=Shape.TRIANGLE;
+            else if(rectangle.isSelected())drawArea.currentShape=Shape.RECTANGLE;
+            else if(square.isSelected())drawArea.currentShape=Shape.SQUARE;
         }
     });
 
     Paint() {
-        chooser.getIcon(new File("C:\\Users\\Alexandru Duna\\IdeaProjects\\Painting App\\res\\1.jpg"));
         //frame
         frame.setLocationRelativeTo(null);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -130,34 +146,36 @@ public class Paint {
         //butoane care verifica cu ce stil sa deseneze userul
         ButtonGroup group = new ButtonGroup();
         group.add(line);
-        group.add(oval);
+        group.add(brush);
         group.add(eraser);
 
         line.setFocusable(false);
-        oval.setFocusable(false);
+        brush.setFocusable(false);
         eraser.setFocusable(false);
         line.setSelected(true);
 
-        if (oval.isSelected()) drawArea.style = Style.OVAL;
-        else if (line.isSelected()) drawArea.style = Style.LINE;
-        else if (eraser.isSelected()) drawArea.style = Style.ERASER;
         timer.start();
 
         JLabel label = new JLabel("Current tool:");
         menuBar.add(label);
         menuBar.add(line);
-        menuBar.add(oval);
+        menuBar.add(brush);
         menuBar.add(eraser);
 
         menuBar.add(new JLabel("Change the size"));
 
         menuBar.add(drawArea.slider);
         //shapes:
+        group1.add(none);
+        group1.add(ovalShape);
+        group1.add(triangle);
+        group1.add(square);
+        group1.add(rectangle);
+
         shapelabel.setPreferredSize(new Dimension(80, 20));
         menuBar.add(shapelabel);
-        drawArea.shapes[0].setSelected(true);
-        for (JRadioButton b:
-             drawArea.shapes) {
+        shapes[0].setSelected(true);
+        for (JRadioButton b: shapes) {
             b.setPreferredSize(new Dimension(90,15));
             b.setFocusable(false);
             menuBar.add(b);

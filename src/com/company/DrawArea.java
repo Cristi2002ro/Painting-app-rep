@@ -12,24 +12,14 @@ public class DrawArea extends JComponent implements ChangeListener {
     Color colorChoose = Color.BLACK;
     JButton changeColor = new JButton();
     JSlider slider = new JSlider(0, 100, 25);
-    Style style;
+    Style style = Style.LINE;
+    Shape currentShape = Shape.NONE;
     Image image;
     Graphics2D g2;
     int w = slider.getValue();
     int h = slider.getValue();
     // coordonatele mouse-ului
     int currentX, currentY, oldX, oldY;
-
-    //shapes
-    JRadioButton triangle = new JRadioButton("Triangle");
-    JRadioButton ovalShape = new JRadioButton("Oval");
-    JRadioButton square = new JRadioButton("Square");
-    JRadioButton rectangle = new JRadioButton("Rectangle");
-    JRadioButton none = new JRadioButton("None");
-
-
-    ButtonGroup group1 = new ButtonGroup();
-    JRadioButton shapes[] = {none, ovalShape, triangle, square, rectangle};
 
 
     public DrawArea() {
@@ -60,44 +50,60 @@ public class DrawArea extends JComponent implements ChangeListener {
                 currentY = e.getY();
                 //setStroke- seteaza grosimea marginilor
                 if (g2 != null) {
-                    if (none.isSelected()) {
-                        if (style == Style.LINE) {
-                            g2.drawLine(oldX, oldY, currentX, currentY);
-                            g2.setStroke(new BasicStroke(slider.getValue()/10));
-                            g2.setPaint(colorChoose);
-                            repaint();
-                            oldX = currentX;
-                            oldY = currentY;
-                        } else if (style == Style.OVAL) {
-                            g2.fillOval(currentX, currentY, w, h);
-                            g2.setPaint(colorChoose);
-                            repaint();
-                        } else if (style == Style.ERASER) {
-                            g2.fillOval(currentX, currentY, w, h);
-                            g2.setPaint(Color.white);
-                            repaint();
+                    if (currentShape == Shape.NONE) {
+                        switch (style) {
+                            case LINE: {
+                                g2.drawLine(oldX, oldY, currentX, currentY);
+                                g2.setStroke(new BasicStroke(slider.getValue() / 10));
+                                g2.setPaint(colorChoose);
+                                repaint();
+                                oldX = currentX;
+                                oldY = currentY;
+                            }
+                            break;
+                            case BRUSH: {
+                                g2.fillOval(currentX, currentY, w, h);
+                                g2.setPaint(colorChoose);
+                                repaint();
+                            }
+                            break;
+                            case ERASER: {
+                                g2.fillOval(currentX, currentY, w, h);
+                                g2.setPaint(Color.white);
+                                repaint();
+                            }
+                            break;
                         }
                         //daca o forma este selectata:
-                    }else if(ovalShape.isSelected()){
-                        g2.drawOval(currentX, currentY, w, h);
-                        g2.setStroke(new BasicStroke(5));
-                        g2.setPaint(colorChoose);
-                        repaint();
-                    }else if(rectangle.isSelected()){
-                        g2.drawRect(currentX, currentY, h*2, h);
-                        g2.setStroke(new BasicStroke(5));
-                        g2.setPaint(colorChoose);
-                        repaint();
-                    }else if(square.isSelected()){
-                        g2.drawRect(currentX, currentY, w, h);
-                        g2.setStroke(new BasicStroke(5));
-                        g2.setPaint(colorChoose);
-                        repaint();
-                    }else if(triangle.isSelected()){
-                        g2.drawPolygon(new int[] {currentX,currentX- slider.getValue(),currentX+ slider.getValue()}, new int[] {currentY,currentY+ slider.getValue()*2,currentY+ slider.getValue()*2}, 3);
-                        g2.setStroke(new BasicStroke(5));
-                        g2.setPaint(colorChoose);
-                        repaint();
+                    } else switch (currentShape) {
+                        case OVAL: {
+                            g2.drawOval(currentX, currentY, w, h);
+                            g2.setStroke(new BasicStroke(5));
+                            g2.setPaint(colorChoose);
+                            repaint();
+                        }
+                        break;
+                        case RECTANGLE: {
+                            g2.drawRect(currentX, currentY, h * 2, h);
+                            g2.setStroke(new BasicStroke(5));
+                            g2.setPaint(colorChoose);
+                            repaint();
+                        }
+                        break;
+                        case SQUARE: {
+                            g2.drawRect(currentX, currentY, w, h);
+                            g2.setStroke(new BasicStroke(5));
+                            g2.setPaint(colorChoose);
+                            repaint();
+                        }
+                        break;
+                        case TRIANGLE: {
+                            g2.drawPolygon(new int[]{currentX, currentX - slider.getValue(), currentX + slider.getValue()}, new int[]{currentY, currentY + slider.getValue() * 2, currentY + slider.getValue() * 2}, 3);
+                            g2.setStroke(new BasicStroke(5));
+                            g2.setPaint(colorChoose);
+                            repaint();
+                        }
+                        break;
                     }
                 }
             }
@@ -111,13 +117,6 @@ public class DrawArea extends JComponent implements ChangeListener {
         slider.setPaintLabels(true);
         slider.setPaintTicks(true);
         slider.addChangeListener(this);
-
-        //shapes:
-        group1.add(none);
-        group1.add(ovalShape);
-        group1.add(triangle);
-        group1.add(square);
-        group1.add(rectangle);
 
     }
 
